@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDA</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+<section id="stage" class="flex-row">
+    <button id="theme-toggle" class="toggle-theme">Theme</button>
+    <div class="flex-column">
+        <div class="stage-container flex-row">
+            <div class="stage-box ready-stage all-center"><p class="stage-digit">1</p></div>
+            <div class="stage-box run-stage all-center"><p class="stage-digit">2</p></div>
+            <div class="stage-box finish-stage all-center"><p class="stage-digit">3</p></div>
+        </div>
+        <p id="top-stage-text" class="stage-text">İfade Bekleniyor</p>
+    </div>
+    <img class="app-logo" src="static/assets/pdaft_dark.png" alt="app-logo">
+</section>
+
+<section id="form">
+    <form class="form flex-row all-center" action="" method="get" id="expression-form">
+        <label for="expression"></label>
+        <input class="form-input" type="text" id="expression" name="expression" placeholder="Kontrol edilecek matematiksel ifadeyi giriniz" required>
+        <button class="form-button all-center" type="submit" value="Submit"><img id="submit-icon" src="static/assets/start.png" alt="start"></button>
+    </form>
+</section>
+
+<p id="app-text" class="app-text">PDAFT, girilen bir matematiksel ifadenin geçerli olup olmadığını kontrol eden bir Pushdown Automaton (PDA) örnek simülasyonudur. Girdiğiniz matematiksel ifadeler +, -, *, / operatörlerini ve parantezleri (( ve )) içermelidir. Ayrıca sayılar pozitif ve 0-9 aralığındaki rakamlar ile tamsayılardan oluşmalıdır.</p>
+
+<section id="result" class="flex-column all-center" style="display: none;">
+    <div class="flex-row result-boxes">
+        <p class="rotate-text no-margin">Aşama Detayı</p>
+        <div class="flex-column result-box result-stage"></div>
+        <p class="rotate-text">Log Kayıtları</p>
+        <div class="flex-column result-box result-log"></div>
+        <p class="rotate-text">Stack Durumu</p>
+        <div class="flex-column result-box result-stack"></div>
+        <p class="rotate-text">İşlem Durumu</p>
+        <div class="flex-column result-box result-state"></div>
+    </div>
+    <div class="flex-row stage-button">
+        <button id="prev-stage-button" class="result-button prev-stage-button all-center" disabled><img src="static/assets/prev.png" alt="prev stage"></button>
+        <p id="stage-text-bottom" class="stage-text-bottom"></p>
+        <button id="next-stage-button" class="result-button next-stage-button all-center" disabled><img src="static/assets/next.png" alt="next stage"></button>
+    </div>
+</section>
+
+<script src="../static/script.js"></script>
+</body>
+</html>
