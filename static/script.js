@@ -9,16 +9,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultLog = document.querySelector('.result-log');
     const resultStack = document.querySelector('.result-stack');
     const resultState = document.querySelector('.result-state');
-    const prevStageButton = document.getElementById('prev-stage-button');
-    const nextStageButton = document.getElementById('next-stage-button');
+    const prevButton = document.getElementById('prev-stage-button');
+    const nextButton = document.getElementById('next-stage-button');
     const stageTextBottom = document.getElementById('stage-text-bottom');
     const topStageText = document.getElementById('top-stage-text');
-    const stageBoxes = document.querySelectorAll('.stage-box');
-    const stageTextColors = {'ready-stage': 'var(--yellow-color)', 'run-stage': 'var(--blue-color)', 'finish-stage-green': 'var(--green-color)', 'finish-stage-red': 'var(--red-color)'};
+    const boxes = document.querySelectorAll('.stage-box');
+    const colors = {'ready': 'var(--yellow-color)', 'run': 'var(--blue-color)', 'green': 'var(--green-color)', 'red': 'var(--red-color)'};
     const appText = document.getElementById('app-text');
     const submitIcon = document.getElementById('submit-icon');
     const submitButton = document.querySelector('.form-button');
 
+    const refresh = 'static/assets/refresh.png';
     form.addEventListener('submit', function(event) {
         event.preventDefault();
         const inputData = document.getElementById('expression').value;
@@ -35,21 +36,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 resultMessage = data.message;
                 resultSection.style.display = 'flex';
                 currentSlide = 0;
-                submitIcon.src = 'static/assets/refresh.png';
+                submitIcon.src = refresh;
                 showSlides();
             })
             .catch(error => console.error('Error:', error));
     });
 
     submitButton.addEventListener('click', function(event) {
-        if (submitIcon.src.includes('static/assets/refresh.png')) {
+        if (submitIcon.src.includes(refresh)) {
             form.reset();
             logs = [];
             currentSlide = 0;
             resultSection.style.display = 'none';
             appText.style.display = 'flex';
             submitIcon.src = 'static/assets/start.png';
-            submitButton.style.background = stageTextColors['finish-stage-green'];
+            submitButton.style.background = colors['green'];
             updateTopInfo();
             form.submit();
         }
@@ -62,37 +63,48 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateTopInfo() {
+
+        function setTopStageText(text, color) {
+            topStageText.textContent = text;
+            topStageText.style.color = color;
+        }
+
+        function setBoxBackgroundColor(boxIndex, color) {
+            boxes[boxIndex].style.background = color;
+        }
+
+        function setSubmitButtonColor(color) {
+            submitButton.style.background = color;
+        }
+
         if (!logs.length) {
-            topStageText.textContent = 'İfade Bekleniyor';
-            topStageText.style.color = stageTextColors['ready-stage'];
-            stageBoxes[1].style.background = "";
-            stageBoxes[2].style.background = "";
-            stageBoxes[2].style.borderColor = stageTextColors['finish-stage-green'];
-            submitButton.style.background = stageTextColors['finish-stage-green'];
+            setTopStageText('İfade Bekleniyor', colors['ready']);
+            setBoxBackgroundColor(1, "");
+            setBoxBackgroundColor(2, "");
+            boxes[2].style.borderColor = colors['green'];
+            setSubmitButtonColor(colors['green']);
         } else if (currentSlide === logs.length - 1) {
             appText.style.display = 'none';
-            if(resultMessage === 'Geçerli ifade.') {
-                topStageText.textContent = 'İfade Kontrol Edildi. Geçerli';
-                topStageText.style.color = stageTextColors['finish-stage-green'];
-                stageBoxes[2].style.background = stageTextColors['finish-stage-green'];
-                submitButton.style.background = stageTextColors['finish-stage-green'];
+            if (resultMessage === 'Geçerli ifade.') {
+                setTopStageText('İfade Kontrol Edildi. Geçerli', colors['green']);
+                setBoxBackgroundColor(2, colors['green']);
+                setSubmitButtonColor(colors['green']);
             } else {
-                topStageText.textContent = 'İfade Kontrol Edildi. Geçersiz';
-                topStageText.style.color = stageTextColors['finish-stage-red'];
-                stageBoxes[2].style.background = stageTextColors['finish-stage-red'];
-                stageBoxes[2].style.borderColor = stageTextColors['finish-stage-red'];
-                submitButton.style.background = stageTextColors['finish-stage-red'];
+                setTopStageText('İfade Kontrol Edildi. Geçersiz', colors['red']);
+                setBoxBackgroundColor(2, colors['red']);
+                boxes[2].style.borderColor = colors['red'];
+                setSubmitButtonColor(colors['red']);
             }
         } else {
             appText.style.display = 'none';
-            topStageText.textContent = 'İfade Kontrol Ediliyor';
-            topStageText.style.color = stageTextColors['run-stage'];
-            stageBoxes[1].style.background = stageTextColors['run-stage'];
-            stageBoxes[2].style.background = "";
-            stageBoxes[2].style.borderColor = stageTextColors['finish-stage-green'];
-            submitButton.style.background = stageTextColors['finish-stage-green'];
+            setTopStageText('İfade Kontrol Ediliyor', colors['run']);
+            setBoxBackgroundColor(1, colors['run']);
+            setBoxBackgroundColor(2, "");
+            boxes[2].style.borderColor = colors['green'];
+            setSubmitButtonColor(colors['green']);
         }
     }
+
 
     function updateSlide() {
         const log = logs[currentSlide];
@@ -121,13 +133,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateButtonState() {
-        prevStageButton.disabled = currentSlide === 0;
-        nextStageButton.disabled = currentSlide === logs.length - 1;
-        prevStageButton.classList.toggle('disabled-button', currentSlide === 0);
-        nextStageButton.classList.toggle('disabled-button', currentSlide === logs.length - 1);
+        prevButton.disabled = currentSlide === 0;
+        nextButton.disabled = currentSlide === logs.length - 1;
+        prevButton.classList.toggle('disabled-button', currentSlide === 0);
+        nextButton.classList.toggle('disabled-button', currentSlide === logs.length - 1);
     }
 
-    prevStageButton.addEventListener('click', function() {
+    prevButton.addEventListener('click', function() {
         if (currentSlide > 0) {
             currentSlide--;
             updateSlide();
@@ -136,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    nextStageButton.addEventListener('click', function() {
+    nextButton.addEventListener('click', function() {
         if (currentSlide < logs.length - 1) {
             currentSlide++;
             updateSlide();

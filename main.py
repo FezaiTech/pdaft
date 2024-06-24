@@ -12,7 +12,7 @@ class PDA:
         self.state = 'z'  # state init
         self.logs = []  # logs init
         self.stage = 0  # stage init
-        self.log_state('z', "init")  # add init log 
+        self.log_state('z', "init")  # add init log
 
     def log_state(self, char, operation):
         self.stage += 1
@@ -30,7 +30,7 @@ class PDA:
         if self.state == 'z' and (char.isdigit() or char == '('):  # goes to q1 or q5 state
             if char == '(':
                 self.state = 'q1'
-                self.stack.append(char)
+                self.stack.append(char)  # add ( to stack
                 self.log_state(char, "Push (")
             elif char.isdigit():
                 self.state = 'q5'
@@ -43,7 +43,7 @@ class PDA:
                 self.log_state(char, "Read Digit")
             elif char == '(':
                 self.state = 'q1'
-                self.stack.append(char)
+                self.stack.append(char)  # add ( to stack
                 self.log_state(char, "Push (")
 
         # q2 state +-*/
@@ -61,7 +61,7 @@ class PDA:
                     self.log_state(char, "Read Digit")
             elif char == '(':
                 self.state = 'q1'
-                self.stack.append(char)
+                self.stack.append(char)  # add ( to stack
                 self.log_state(char, "Push (")
 
         # q3 state digit
@@ -72,7 +72,7 @@ class PDA:
             elif char == ')':
                 self.state = 'q4'
                 if self.stack and self.stack[-1] == '(':
-                    self.stack.pop()
+                    self.stack.pop()  # pop ( in stack
                     self.log_state(char, "Pop )")
                 else:
                     self.state = 'qf'  # Invalid state
@@ -85,7 +85,7 @@ class PDA:
         elif self.state == 'q4' and (char in '+-*/' or char == ')'):  # q4 goes to q6 or q4 or finish state
             if char == ')':
                 if self.stack and self.stack[-1] == '(':
-                    self.stack.pop()
+                    self.stack.pop()   # pop ( in stack
                     self.log_state(char, "Pop )")
                 else:
                     self.state = 'qf'  # Invalid state
@@ -118,7 +118,7 @@ class PDA:
                     self.log_state(char, "Read Digit")
             elif char == '(':
                 self.state = 'q1'
-                self.stack.append(char)
+                self.stack.append(char)  # add ( to stack
                 self.log_state(char, "Push (")
 
         # qf state
@@ -138,11 +138,13 @@ class PDA:
         #  it returns true or false depending on whether it is valid or invalid
         return self.state != 'qf' and len(self.stack) == 1 and self.stack[0] == 'z' and (self.state == 'q5' or self.state == 'q4')
 
+    #  saves the log records as txt when you enter each new statement.
     def write_logs_to_file(self):
-        with open("log.txt", "w") as log_file:
+        with open("logs.txt", "w") as log_file:
             for log in self.logs:
                 log_file.write(
                     f"Stage: {log['stage']}, State: {log['state']}, Char: {log['char']}, Log: {log['log']}, Stack: {log['stack']}\n")
+                #  example log : Stage: 1, State: z, Char: z, Log: init, Stack: z
 
 
 @app.route('/process', methods=['POST'])
@@ -180,3 +182,10 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+    #  The PDA simulation supports the following characters:
+    # Digits (0-9)
+    # Operators (+, -, *, /)
+    # Parentheses (())
+    # Positive Numbers
+
