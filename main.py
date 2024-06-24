@@ -7,11 +7,11 @@ app = Flask(__name__)
 class PDA:
 
     def __init__(self):
-        self.stack = ['z']
-        self.state = 'z'
-        self.logs = []
-        self.stage = 0
-        self.log_state('z', "init")
+        self.stack = ['z']  # stack init
+        self.state = 'z'  # state init
+        self.logs = []  # logs init
+        self.stage = 0  # stage init
+        self.log_state('z', "init")  # add init log
 
     def log_state(self, char, operation):
         self.stage += 1
@@ -26,7 +26,7 @@ class PDA:
 
     def transition(self, char):
         # z init state
-        if self.state == 'z' and (char.isdigit() or char == '('):
+        if self.state == 'z' and (char.isdigit() or char == '('):  # goes to q1 or q5 state
             if char == '(':
                 self.state = 'q1'
                 self.stack.append(char)
@@ -35,8 +35,8 @@ class PDA:
                 self.state = 'q5'
                 self.log_state(char, "Read Digit")
 
-        # q1 state
-        elif self.state == 'q1' and (char.isdigit() or char == '('):
+        # q1 state (
+        elif self.state == 'q1' and (char.isdigit() or char == '('):  # q1 goes to q3 or q1 state
             if char.isdigit():
                 self.state = 'q3'
                 self.log_state(char, "Read Digit")
@@ -45,12 +45,12 @@ class PDA:
                 self.stack.append(char)
                 self.log_state(char, "Push (")
 
-        # q2 state
-        elif self.state == 'q2' and (char.isdigit() or char == '('):
+        # q2 state +-*/
+        elif self.state == 'q2' and (char.isdigit() or char == '('):  # q2 goes to q3 or q1 state
             if char.isdigit():
-                if self.logs and self.logs[-1]['char'] == "/":
+                if self.logs and self.logs[-1]['char'] == "/":  # check zero division
                     if char == '0':
-                        self.state = 'qf'
+                        self.state = 'qf'  # Invalid state
                         self.log_state(char, "Invalid State Zero Division")
                     else:
                         self.state = 'q3'
@@ -63,8 +63,8 @@ class PDA:
                 self.stack.append(char)
                 self.log_state(char, "Push (")
 
-        # q3 state
-        elif self.state == 'q3' and (char in '+-*/' or char == ')' or char.isdigit()):
+        # q3 state digit
+        elif self.state == 'q3' and (char in '+-*/' or char == ')' or char.isdigit()):  # q3 goes to q2 or q4 state
             if char in '+-*/':
                 self.state = 'q2'
                 self.log_state(char, "Read Operator")
@@ -80,8 +80,8 @@ class PDA:
                 self.state = 'q3'
                 self.log_state(char, "Read Digit")
 
-        # q4 state
-        elif self.state == 'q4' and (char in '+-*/' or char == ')'):
+        # q4 state )
+        elif self.state == 'q4' and (char in '+-*/' or char == ')'):  # q4 goes to q6 or q4 or finish state
             if char == ')':
                 if self.stack and self.stack[-1] == '(':
                     self.stack.pop()
@@ -93,8 +93,8 @@ class PDA:
                 self.state = 'q6'
                 self.log_state(char, "Read Operator")
 
-        # q5 state
-        elif self.state == 'q5' and (char in '+-*/' or char.isdigit()):
+        # q5 state digit
+        elif self.state == 'q5' and (char in '+-*/' or char.isdigit()):  # q5 goes to q6 or q5 state
             if char in '+-*/':
                 self.state = 'q6'
                 self.log_state(char, "Read Operator")
@@ -102,12 +102,12 @@ class PDA:
                 self.state = 'q5'
                 self.log_state(char, "Read Digit")
 
-        # q6 state
-        elif self.state == 'q6' and (char.isdigit() or char == '('):
+        # q6 state +-*/
+        elif self.state == 'q6' and (char.isdigit() or char == '('):  # q6 goes to q5 or q1 state
             if char.isdigit():
-                if self.logs and self.logs[-1]['char'] == "/":
+                if self.logs and self.logs[-1]['char'] == "/":  # check zero division
                     if char == '0':
-                        self.state = 'qf'
+                        self.state = 'qf'  # Invalid state
                         self.log_state(char, "Invalid State zero division")
                     else:
                         self.state = 'q5'
@@ -125,14 +125,16 @@ class PDA:
             self.state = 'qf'  # Invalid state
             self.log_state('% sqf' % char, "Invalid State")
 
-        return self.state == 'qf'
+        return self.state == 'qf'  # result for last state
         print(self.stack)
 
     def is_valid(self):
+        # if the final state is not qf but there are invalid conditions, qf state is created
         if self.state != 'qf' and (len(self.stack) != 1 or (len(self.stack) == 1 and (self.state != 'q5' and self.state != 'q4'))):
             self.state = 'qf'
             self.log_state('qf', "Invalid State")
 
+        #  it returns true or false depending on whether it is valid or invalid
         return self.state != 'qf' and len(self.stack) == 1 and self.stack[0] == 'z' and (self.state == 'q5' or self.state == 'q4')
 
 
@@ -152,6 +154,7 @@ def check_expression():
         pda.state = 'f'
         pda.log_state('f', "finish")
 
+    #  set response
     response = {
         "message": result,
         "logs": pda.logs
