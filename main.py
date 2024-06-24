@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+import os
 
 
 app = Flask(__name__)
@@ -11,7 +12,7 @@ class PDA:
         self.state = 'z'  # state init
         self.logs = []  # logs init
         self.stage = 0  # stage init
-        self.log_state('z', "init")  # add init log
+        self.log_state('z', "init")  # add init log 
 
     def log_state(self, char, operation):
         self.stage += 1
@@ -137,6 +138,12 @@ class PDA:
         #  it returns true or false depending on whether it is valid or invalid
         return self.state != 'qf' and len(self.stack) == 1 and self.stack[0] == 'z' and (self.state == 'q5' or self.state == 'q4')
 
+    def write_logs_to_file(self):
+        with open("log.txt", "w") as log_file:
+            for log in self.logs:
+                log_file.write(
+                    f"Stage: {log['stage']}, State: {log['state']}, Char: {log['char']}, Log: {log['log']}, Stack: {log['stack']}\n")
+
 
 @app.route('/process', methods=['POST'])
 def check_expression():
@@ -153,6 +160,9 @@ def check_expression():
     if result == "Geçerli ifade.":
         pda.state = 'f'
         pda.log_state('f', "finish")
+
+    #  set log.txt
+    pda.write_logs_to_file()
 
     #  set response
     response = {
