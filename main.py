@@ -150,7 +150,7 @@ class PDA:
 @app.route('/process', methods=['POST'])
 def check_expression():
     expression = request.json.get('inputData')
-
+    expression = expression.replace(" ", "")
     print(expression)
 
     pda = PDA()
